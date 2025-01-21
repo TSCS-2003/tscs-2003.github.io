@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <title></title>
+    <link rel="stylesheet" href="dist/reveal.css" />
+    <link rel="stylesheet" href="dist/theme/night.css" id="theme" />
+    <link rel="stylesheet" href="plugin/highlight/monokai.css" />
+	<link rel="stylesheet" href="css/layout.css" />
+	<link rel="stylesheet" href="plugin/customcontrols/style.css">
+	<link rel="stylesheet" href="plugin/chalkboard/style.css">
+
+
+
+    <script defer src="dist/fontawesome/all.min.js"></script>
+
+	<script type="text/javascript">
+		var forgetPop = true;
+		function onPopState(event) {
+			if(forgetPop){
+				forgetPop = false;
+			} else {
+				parent.postMessage(event.target.location.href, "app://obsidian.md");
+			}
+        }
+		window.onpopstate = onPopState;
+		window.onmessage = event => {
+			if(event.data == "reload"){
+				window.document.location.reload();
+			}
+			forgetPop = true;
+		}
+
+		function fitElements(){
+			const itemsToFit = document.getElementsByClassName('fitText');
+			for (const item in itemsToFit) {
+				if (Object.hasOwnProperty.call(itemsToFit, item)) {
+					var element = itemsToFit[item];
+					fitElement(element,1, 1000);
+					element.classList.remove('fitText');
+				}
+			}
+		}
+
+		function fitElement(element, start, end){
+
+			let size = (end + start) / 2;
+			element.style.fontSize = `${size}px`;
+
+			if(Math.abs(start - end) < 1){
+				while(element.scrollHeight > element.offsetHeight){
+					size--;
+					element.style.fontSize = `${size}px`;
+				}
+				return;
+			}
+
+			if(element.scrollHeight > element.offsetHeight){
+				fitElement(element, start, size);
+			} else {
+				fitElement(element, size, end);
+			}		
+		}
+
+
+		document.onreadystatechange = () => {
+			fitElements();
+			if (document.readyState === 'complete') {
+				if (window.location.href.indexOf("?export") != -1){
+					parent.postMessage(event.target.location.href, "app://obsidian.md");
+				}
+				if (window.location.href.indexOf("print-pdf") != -1){
+					let stateCheck = setInterval(() => {
+						clearInterval(stateCheck);
+						window.print();
+					}, 250);
+				}
+			}
+	};
+
+
+        </script>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides"><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Problem-Solving: A Primer using Types
+_The images in this presentation do not belong to me nor or they my intellectual work. They are the work of wonderful artists and designers that have made their work available online. I am making use of them as part of Free and Fair Use for Educational purposes._
+</div>
+
+<aside class="notes"><p>learning the fundamentals of computer science starts with learning the fundamentals of problem-solving</p>
+</aside></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Where to Begin...
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+_"If I had an hour to solve a problem I’d spend 55 minutes thinking about the problem and 5 minutes thinking about solutions."  - Albert Einstein_
+
+<img src="Presentations/_Resources/albert-einstein.jpg" alt="" style="width: 500px; object-fit: fill">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+To develop a richer understanding of algorithms and problem solving,
+
+We need to first improve how we **think** about problems.
+
+This is a requirement of our discipline.
+</div>
+
+<aside class="notes"><p>how might we define our discipline?</p>
+</aside></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Computer Science
+- **Science** - _a methodology for pursuing knowledge through the construction of repeatable experiments._
+
+- **Computer** - _the principles by which an input and a process can produce an output, i.e., an algorithm._
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+In short, **computer science is the discovery and study of algorithms.**
+
+<img src="Presentations/_Resources/Science_Math-origins-72_Jessica-Lam.jpg" alt="" style="width: 650px; object-fit: fill">
+
+
+This is done both **mathematically** and **scientifically**.
+</div>
+
+<aside class="notes"><p>there is the invented vs discovered debate in mathematics, algorithms are discovered; if matter did not exist, then physics would not exist but mathematics and computer science would; physics is a science that strictly relies on discovery whereas computer science does but not strictly; sciences are used to invent based on discoveries; although without matter, computer science would just be computational mathematics; computer science today is both science and mathematics; so where does the science part come in; the science part is to deal with real world phenomena</p>
+</aside></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+The **mathematics** of computer science involve the discovery of algorithms and the application of predicate-based logic, i.e., algebra and reasoning.
+
+e.g., imagine that you want to identify every _prime_ number.
+
+Mathematics helps us to understand what it means for a number to be prime.
+</div>
+
+<aside class="notes"><p>there are an infinite number of primes, so this process cannot terminate; it does exist in the abstract since infinity also exists in the abstract, but it cannot be implemented since it will never terminate; mathematics is also important here in helping us to identify what it means for something to be prime, which is something true of a number and not something that was invented</p>
+</aside></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+The **science** of computer science involves the implementation of algorithms on physical machines, e.g., computer architectures.
+
+<img src="Presentations/_Resources/Von-Neumann-Architecture-Diagram.jpg" alt="" style="width: 500px; object-fit: fill">
+
+
+Physical phenomena can affect how we implement algorithms, e.g., heat, time, memory.
+</div>
+
+<aside class="notes"><p>the example included is of a von Neumann computer architecture.</p>
+</aside></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+In summary, computer science is the study of algorithms.
+
+Algorithms are implemented onto physical machines...for the purpose of?
+- SOLVING PROBLEMS
+
+So in a way, **computer science is also the study of problems and problem-solving.**
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### An Example Problem
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Let's take the following problem...
+
+_Given a sequence of elements, what is the sum of the sequence?_
+
+Can you solve this problem?
+- Yes
+- No
+</div>
+
+<aside class="notes"><p>neither is correct; neither is absolutely wrong either, but no is better than yes</p>
+</aside></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Let's think more about this problem...
+
+To do that, we need to understand our first set of fundamentals.
+- Types
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Types
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+In mathematics, a **type** is a way to group like **objects**, where an object is something that holds data and can be operated on.
+- This is also true in computer science.
+
+<img src="Presentations/_Resources/jose-abstract-art.png" alt="" style="width: 600px; object-fit: fill">
+
+
+However, types and objects both exist in the **abstract**.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+But we can't use abstract things to get physical solutions...unless we turn the abstract into something more concrete.
+
+Like implementing an abstract algorithm into a computer program.
+</div>
+
+<aside class="notes"><p>probably the coolest thing about computer science is that you can take anything seemingly imaginary and make it physically real just by writing some code</p>
+</aside></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+We need to take the abstract types and objects and put them into a computer by turning them into physical data, or **memory**.
+
+<img src="Presentations/_Resources/2048_OG-logo.jpg" alt="" style="width: 500px; object-fit: fill">
+
+
+Computers architectures use **binary** memory.
+
+`$1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024$`
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+The representation of something in binary is called its **binary encoding**.
+
+There are many well-defined encodings, which are typically referred to as **primitive types**.
+</div>
+
+<aside class="notes"><p>most of these are defined by IEEE</p>
+</aside></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Primitive types include:
+- **boolean** - true/false, 1 byte, unsigned
+- **byte** - integer, 1 byte, unsigned
+- **char** - ASCII, 1 byte, unsigned
+- **short** - integer, 2 bytes, signed
+- **int** - integer, 4 bytes, signed
+- **long** - integer, 8 bytes, signed
+- **float** - number, 4 bytes, signed
+- **double** - number, 8 bytes, signed
+
+There are also variable-length encodings, such as **UTF-8**, **UTF-16**, and **UTF-32**.
+
+As well as **references**.
+</div>
+
+<aside class="notes"><p>these are fundamental to writing computer programs and should not be brushed off as simple; being a great programmer/computer scientist requires mastering the fundamentals; if something appears simple then there is not excuse not to know it by heart; this list is not exhaustive, but it goes cover the primitive types in Java; we&#39;ll go over references in a later lecture</p>
+</aside></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Computers and computer programs rely on these encodings because they are **well-defined**, i.e.,
+- known,
+- unchanging, and
+- **sized** (it always fits)
+
+<img src="Presentations/_Resources/puzzle-pieces.png" alt="" style="width: 600px; object-fit: fill">
+</div>
+
+<aside class="notes"><p>sized means that they use a determinable number of bytes, so they can be stored into and loaded from memory without overwriting existing data</p>
+</aside></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+A primitive type is not necessarily **simple**, so it's best not to think of them as such.
+
+e.g., what is `$\frac{1}{3}$` in binary?
+
+OR is `$1 == 3 \cdot \frac{1}{3}$`?
+</div>
+
+<aside class="notes"><p>fundamentals might come first, but they should never be dismissed as being simple; types are fundamentals, types are not necessarily simple; floating point is quite complicated to most people and can be very annoying to work with, but floating points are primitive</p>
+</aside></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+In mathematics, `$1 == 3 \cdot \frac{1}{3}$` is **true**, but in computing, we use [floating point](https://www.geeksforgeeks.org/ieee-standard-754-floating-point-numbers/) to represent fractions in scientific notation.
+
+<img src="Presentations/_Resources/Single-Precision-IEEE-754-Floating-Point-Standard.jpg" alt="" style="object-fit: scale-down">
+
+
+Floating point has limited **precision** so floating point operations can have a degree of error.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+The value `$1 \approxeq 3 \cdot \frac{1}{3}$` in computing because
+- `$\frac{1}{3} = 0.3333...3334$`, so
+- `$3 \cdot \frac{1}{3} = 1.000...00298...$`
+- But `$1.000...00298...$` is not the same as `$1$`.
+
+So `$1 == 3 \cdot \frac{1}{3}$` is actually **false**!
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+So as computer scientists and programmers, we have to make adjustments. If we write
+
+`x = 3 * 1. / 3.;`
+
+We use the following comparison instead,
+
+`x - e <= 1. && 1. <= x + e;`
+
+where `e` (epsilon) stores our precision, where precision can be represented as `$0.0000001$`.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Connecting what we **know is true** of something to **how it is represented in computing** is an essential part of problem-solving as a computer scientist.
+
+Take this question again: _Given a sequence of elements, what is the sum of the sequence?_
+
+Ask yourself:
+- What is **known to be true**?
+- How is that **represented in computing**?
+</div>
+
+<aside class="notes"><p>when we look at the question in this context, we should hopefully see that what we know about the problem is very little, since an element is opaque -- i.e., its structure is not well-defined</p>
+</aside></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Composite Types
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Another category of type is the **composite type**.
+
+_A composite type is a group of zero or more types, where each type can either be primitive or composite._
+
+A **String** is a composite type because it includes zero or more **char**'s.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+All **Object**'s are composite types because they include zero or more **fields**, where each field holds data of a particular type.
+
+An **Object** that only has fields is a **struct**, which is an essential form of a composite data type.
+
+An **Object** that has no fields is called **empty**.
+</div>
+
+<aside class="notes"><p>fields can be primitive or composite</p>
+</aside></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+One of the most important composite types is the **array**.
+
+_An array is a contiguous sequence of elements, where each element in the array has the same type._
+
+<img src="Presentations/_Resources/01_array.png" alt="" style="width: 750px; object-fit: fill">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<img src="Presentations/_Resources/01_array.png" alt="" style="width: 750px; object-fit: fill">
+
+
+Arrays have
+- indices that start at `$0$` and mark the positions of elements, and
+- a length (or capacity), which is the maximum number of elements in the array.
+
+With length `$n$`, then the last index is always `$n - 1$`.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<img src="Presentations/_Resources/01_array.png" alt="" style="width: 750px; object-fit: fill">
+
+
+Each location in an array is called a **cell**.
+
+A cell with meaningful data has an **element**. Otherwise, the cell has **garbage**.
+</div>
+
+<aside class="notes"><p>garbage because it&#39;s a mess of bits with no discernible structure or verifiable meaning</p>
+</aside></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+An array in Java is declared and initialized as so
+
+```java
+int[] arr = new int[n];
+```
+
+Where,
+- `int[]` is the type and array declaration,
+- `arr` is the name of the variable,
+- `new` initializes the array,
+- `int[n]` declares the array to be initialized, and
+- `n` is the length of the array
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Array elements can be set and accessed by their index.
+
+```java
+arr[0] = 5;
+y = arr[0];
+( y == 5 ); // true
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Arrays have a single field called `length` that can be used to determine how many elements they hold.
+
+```java
+for (int i = 0; i < arr.length; i++) {
+	// do stuff
+}
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Be careful not to use array indices that are out of bounds.
+```java
+arr[ -1 ]; // error!
+arr[ arr.length + 1 ]; // error!
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Arrays should become easy to work with!
+
+Here are two examples.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Imagine you want to sum the elements of an array.
+```java
+int sum = 0;
+for (int i = 0; i < arr.length; i++) {
+	sum += arr[i];
+}
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Or find the maximum element in an array.
+```java
+int max = 0;
+for (int i = 0; i < arr.length; i++) {
+	max = Math.max(max, arr[i]);
+}
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+But how would we do the following...
+
+_Given integers `$a$` and `$b$` and an array `$A$`, ensure that `$a + b$` is a valid index in the array._
+
+_Given integers `$a$` and `$b$` and an array `$A$`, ensure that `$a - b$` is a valid index in the array._
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+_Given integers `$a$` and `$b$` and an array `$A$`, ensure that `$a + b$` is a valid index in the array._
+
+```java
+while (a + b >= A.length) {
+	b -= A.length;
+}
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+_Given integers `$a$` and `$b$` and an array `$A$`, ensure that `$a - b$` is a valid index in the array._
+
+```java
+while (a - b < 0) {
+	a += A.length;
+}
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Notice how we are concerned with the boundaries `0` and `A.length`.
+
+Because the interval of the indices of an array `A` is always
+
+`[0, A.length)`
+
+What if we used a different interval of indices though?
+</div>
+
+<aside class="notes"><p>inclusive left but exclusive right</p>
+</aside></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Slices
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Another composite type that is derived from an array is called a **slice**.
+
+<img src="Presentations/_Resources/javascript-array-slice-method-foxbits-fact-1_0.jpg" alt="" style="width: 700px; object-fit: fill">
+
+
+_A slice is a contiguous portion of an array that may include some or all of the cells of an array._
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Java has no defined type for a slice, so we would handle the prior example as so.
+
+```java
+Fruit[] fruits = new Fruit[7];
+int start = 1;
+int end = 5;
+
+for (int i = start; i < end; i++) {
+	System.out.println(fruits[i]);
+}
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+**String**'s are another type that can have a slice.
+
+A slice of a **String** is typically called a **substring**.
+
+This is because a **String** is really a **char[]**.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Let's return to our prior question with a slight change to include a slice.
+
+_Given integers `$a$` and `$b$` and an array `$A$` with slice `$S$`, ensure that `$a + b$` is a valid index in the slice._
+
+_Given integers `$a$` and `$b$` and an array `$A$` with slice `$S$`, ensure that `$a - b$` is a valid index in the slice._
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+_Given integers `$a$` and `$b$` and an array `$A$` with slice `$S$`, ensure that `$a + b$` is a valid index in the slice._
+
+```java
+while (a + b >= end) {
+	b -= (end - start);
+}
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+_Given integers `$a$` and `$b$` and an array `$A$` with slice `$S$`, ensure that `$a - b$` is a valid index in the slice._
+
+```java
+while (a - b < start) {
+	a += (end - start);
+}
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+In this week's lab assignment, you'll be working with a Caesar shift cipher over the ASCII table.
+
+<img src="Presentations/_Resources/ascii-table.png" alt="" style="width: 600px; object-fit: fill">
+
+
+Using a slice from `$32$` to `$127$` (i.e., `$[32, 127)$` ).
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+The ASCII table represents the **char** type.
+
+You'll be decoding one **char** into another using a Caesar shift, which has wraparound.
+
+e.g., 'w' with a shift of `$9$` is actually '!' .
+</div></script></section></div>
+    </div>
+
+    <script src="dist/reveal.js"></script>
+
+    <script src="plugin/markdown/markdown.js"></script>
+    <script src="plugin/highlight/highlight.js"></script>
+    <script src="plugin/zoom/zoom.js"></script>
+    <script src="plugin/notes/notes.js"></script>
+    <script src="plugin/math/math.js"></script>
+	<script src="plugin/mermaid/mermaid.js"></script>
+	<script src="plugin/chart/chart.min.js"></script>
+	<script src="plugin/chart/plugin.js"></script>
+	<script src="plugin/menu/menu.js"></script>
+	<script src="plugin/customcontrols/plugin.js"></script>
+	<script src="plugin/chalkboard/plugin.js"></script>
+
+    <script>
+      function extend() {
+        var target = {};
+        for (var i = 0; i < arguments.length; i++) {
+          var source = arguments[i];
+          for (var key in source) {
+            if (source.hasOwnProperty(key)) {
+              target[key] = source[key];
+            }
+          }
+        }
+        return target;
+      }
+
+	  function isLight(color) {
+		let hex = color.replace('#', '');
+
+		// convert #fff => #ffffff
+		if(hex.length == 3){
+			hex = `${hex[0]}${hex[0]}${hex[1]}${hex[1]}${hex[2]}${hex[2]}`;
+		}
+
+		const c_r = parseInt(hex.substr(0, 2), 16);
+		const c_g = parseInt(hex.substr(2, 2), 16);
+		const c_b = parseInt(hex.substr(4, 2), 16);
+		const brightness = ((c_r * 299) + (c_g * 587) + (c_b * 114)) / 1000;
+		return brightness > 155;
+	}
+
+	var bgColor = getComputedStyle(document.documentElement).getPropertyValue('--r-background-color').trim();
+	var isLight = isLight(bgColor);
+
+	if(isLight){
+		document.body.classList.add('has-light-background');
+	} else {
+		document.body.classList.add('has-dark-background');
+	}
+
+      // default options to init reveal.js
+      var defaultOptions = {
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+        transition: 'default', // none/fade/slide/convex/concave/zoom
+        plugins: [
+          RevealMarkdown,
+          RevealHighlight,
+          RevealZoom,
+          RevealNotes,
+          RevealMath.MathJax3,
+		  RevealMermaid,
+		  RevealChart,
+		  RevealCustomControls,
+		  RevealMenu,
+		  RevealChalkboard, 
+        ],
+
+
+    	allottedTime: 120 * 1000,
+
+		mathjax3: {
+			mathjax: 'plugin/math/mathjax/tex-mml-chtml.js',
+		},
+		markdown: {
+		  gfm: true,
+		  mangle: true,
+		  pedantic: false,
+		  smartLists: false,
+		  smartypants: false,
+		},
+
+		mermaid: {
+			theme: isLight ? 'default' : 'dark',
+		},
+
+		customcontrols: {
+			controls: [
+				{ icon: '<i class="fa fa-pen-square"></i>',
+				title: 'Toggle chalkboard (B)',
+				action: 'RevealChalkboard.toggleChalkboard();'
+				},
+				{ icon: '<i class="fa fa-pen"></i>',
+				title: 'Toggle notes canvas (C)',
+				action: 'RevealChalkboard.toggleNotesCanvas();'
+				},
+			]
+		},
+		menu: {
+			loadIcons: false
+		}
+      };
+
+      // options from URL query string
+      var queryOptions = Reveal().getQueryHash() || {};
+
+      var options = extend(defaultOptions, {"width":960,"height":700,"margin":0.04,"controls":true,"progress":true,"slideNumber":true,"transition":"slide","transitionSpeed":"default"}, queryOptions);
+    </script>
+
+    <script>
+      Reveal.initialize(options);
+    </script>
+  </body>
+
+  <!-- created with Advanced Slides -->
+</html>
