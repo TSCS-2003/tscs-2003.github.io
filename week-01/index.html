@@ -238,7 +238,7 @@ There are many well-defined encodings, which are typically referred to as **prim
 Primitive types include:
 - **boolean** - true/false, 1 byte, unsigned
 - **byte** - integer, 1 byte, unsigned
-- **char** - ASCII, 1 byte, unsigned
+- **char** - ASCII/Unicode, 2 bytes, unsigned
 - **short** - integer, 2 bytes, signed
 - **int** - integer, 4 bytes, signed
 - **long** - integer, 8 bytes, signed
@@ -440,6 +440,8 @@ for (int i = 0; i < arr.length; i++) {
 	max = Math.max(max, arr[i]);
 }
 ```
+
+P.S. There is actually a logic bug in this implementation? Do you see it? As a hint, could `$0$` ever be an invalid maximum?
 </div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
 <div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
 
