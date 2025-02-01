@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <title></title>
+    <link rel="stylesheet" href="dist/reveal.css" />
+    <link rel="stylesheet" href="dist/theme/night.css" id="theme" />
+    <link rel="stylesheet" href="plugin/highlight/monokai.css" />
+	<link rel="stylesheet" href="css/layout.css" />
+	<link rel="stylesheet" href="plugin/customcontrols/style.css">
+	<link rel="stylesheet" href="plugin/chalkboard/style.css">
+
+
+
+    <script defer src="dist/fontawesome/all.min.js"></script>
+
+	<script type="text/javascript">
+		var forgetPop = true;
+		function onPopState(event) {
+			if(forgetPop){
+				forgetPop = false;
+			} else {
+				parent.postMessage(event.target.location.href, "app://obsidian.md");
+			}
+        }
+		window.onpopstate = onPopState;
+		window.onmessage = event => {
+			if(event.data == "reload"){
+				window.document.location.reload();
+			}
+			forgetPop = true;
+		}
+
+		function fitElements(){
+			const itemsToFit = document.getElementsByClassName('fitText');
+			for (const item in itemsToFit) {
+				if (Object.hasOwnProperty.call(itemsToFit, item)) {
+					var element = itemsToFit[item];
+					fitElement(element,1, 1000);
+					element.classList.remove('fitText');
+				}
+			}
+		}
+
+		function fitElement(element, start, end){
+
+			let size = (end + start) / 2;
+			element.style.fontSize = `${size}px`;
+
+			if(Math.abs(start - end) < 1){
+				while(element.scrollHeight > element.offsetHeight){
+					size--;
+					element.style.fontSize = `${size}px`;
+				}
+				return;
+			}
+
+			if(element.scrollHeight > element.offsetHeight){
+				fitElement(element, start, size);
+			} else {
+				fitElement(element, size, end);
+			}		
+		}
+
+
+		document.onreadystatechange = () => {
+			fitElements();
+			if (document.readyState === 'complete') {
+				if (window.location.href.indexOf("?export") != -1){
+					parent.postMessage(event.target.location.href, "app://obsidian.md");
+				}
+				if (window.location.href.indexOf("print-pdf") != -1){
+					let stateCheck = setInterval(() => {
+						clearInterval(stateCheck);
+						window.print();
+					}, 250);
+				}
+			}
+	};
+
+
+        </script>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides"><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Composite Types - Arrays and Slices
+_The images in this presentation do not belong to me nor or they my intellectual work. They are the work of wonderful artists and designers that have made their work available online. I am making use of them as part of Free and Fair Use for Educational purposes._
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Another category of type is the **composite type**.
+
+_A composite type is a group of zero or more types, where each type can either be primitive or composite._
+
+A **String** is a composite type because it includes zero or more **char**'s.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+All **Object**'s are composite types because they include zero or more **fields**, where each field holds data of a particular type.
+
+An **Object** that only has fields is a **struct**, which is an essential form of a composite data type.
+
+An **Object** that has no fields is called **empty**.
+</div>
+
+<aside class="notes"><p>fields can be primitive or composite</p>
+</aside></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+One of the most important composite types is the **array**.
+
+_An array is a contiguous sequence of elements, where each element in the array has the same type._
+
+<img src="https://raw.githubusercontent.com/TSCS-2003/tscs-2003.github.io/refs/heads/main/week-01-arrays/Presentations/_Resources/01_array.png" alt="" style="width: 750px; object-fit: fill">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<img src="https://raw.githubusercontent.com/TSCS-2003/tscs-2003.github.io/refs/heads/main/week-01-arrays/Presentations/_Resources/01_array.png" alt="" style="width: 750px; object-fit: fill">
+
+
+Arrays have
+- indices that start at `$0$` and mark the positions of elements, and
+- a length (or capacity), which is the maximum number of elements in the array.
+
+With length `$n$`, then the last index is always `$n - 1$`.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<img src="https://raw.githubusercontent.com/TSCS-2003/tscs-2003.github.io/refs/heads/main/week-01-arrays/Presentations/_Resources/01_array.png" alt="" style="width: 750px; object-fit: fill">
+
+
+Each location in an array is called a **cell**.
+
+A cell with meaningful data has an **element**. Otherwise, the cell has **garbage**.
+</div>
+
+<aside class="notes"><p>garbage because it&#39;s a mess of bits with no discernible structure or verifiable meaning</p>
+</aside></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+An array in Java is declared and initialized as so
+
+```java
+int[] arr = new int[n];
+```
+
+Where,
+- `int[]` is the type and array declaration,
+- `arr` is the name of the variable,
+- `new` initializes the array,
+- `int[n]` declares the array to be initialized, and
+- `n` is the length of the array
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Array elements can be set and accessed by their index.
+
+```java
+arr[0] = 5;
+y = arr[0];
+( y == 5 ); // true
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Arrays have a single field called `length` that can be used to determine how many elements they hold.
+
+```java
+for (int i = 0; i < arr.length; i++) {
+	// do stuff
+}
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Be careful not to use array indices that are out of bounds.
+```java
+arr[ -1 ]; // error!
+arr[ arr.length + 1 ]; // error!
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Arrays should become easy to work with!
+
+Here are two examples.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Imagine you want to sum the elements of an array.
+```java
+int sum = 0;
+for (int i = 0; i < arr.length; i++) {
+	sum += arr[i];
+}
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Or find the maximum element in an array.
+```java
+int max = 0;
+for (int i = 0; i < arr.length; i++) {
+	max = Math.max(max, arr[i]);
+}
+```
+
+P.S. There is actually a logic bug in this implementation? Do you see it? As a hint, could `$0$` ever be an invalid maximum?
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+But how would we do the following...
+
+_Given integers `$a$` and `$b$` and an array `$A$`, ensure that `$a + b$` is a valid index in the array._
+
+_Given integers `$a$` and `$b$` and an array `$A$`, ensure that `$a - b$` is a valid index in the array._
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+_Given integers `$a$` and `$b$` and an array `$A$`, ensure that `$a + b$` is a valid index in the array._
+
+```java
+while (a + b >= A.length) {
+	b -= A.length;
+}
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+_Given integers `$a$` and `$b$` and an array `$A$`, ensure that `$a - b$` is a valid index in the array._
+
+```java
+while (a - b < 0) {
+	a += A.length;
+}
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Notice how we are concerned with the boundaries `0` and `A.length`.
+
+Because the interval of the indices of an array `A` is always
+
+`[0, A.length)`
+
+What if we used a different interval of indices though?
+</div>
+
+<aside class="notes"><p>inclusive left but exclusive right</p>
+</aside></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Slices
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Another composite type that is derived from an array is called a **slice**.
+
+<img src="https://raw.githubusercontent.com/TSCS-2003/tscs-2003.github.io/refs/heads/main/week-01-arrays/Presentations/_Resources/javascript-array-slice-method-foxbits-fact-1_0.jpg" alt="" style="width: 700px; object-fit: fill">
+
+
+_A slice is a contiguous portion of an array that may include some or all of the cells of an array._
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Java has no defined type for a slice, so we would handle the prior example as so.
+
+```java
+Fruit[] fruits = new Fruit[7];
+int start = 1;
+int end = 5;
+
+for (int i = start; i < end; i++) {
+	System.out.println(fruits[i]);
+}
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+**String**'s are another type that can have a slice.
+
+A slice of a **String** is typically called a **substring**.
+
+This is because a **String** is really a **char[]**.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Let's return to our prior question with a slight change to include a slice.
+
+_Given integers `$a$` and `$b$` and an array `$A$` with slice `$S$`, ensure that `$a + b$` is a valid index in the slice._
+
+_Given integers `$a$` and `$b$` and an array `$A$` with slice `$S$`, ensure that `$a - b$` is a valid index in the slice._
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+_Given integers `$a$` and `$b$` and an array `$A$` with slice `$S$`, ensure that `$a + b$` is a valid index in the slice._
+
+```java
+while (a + b >= end) {
+	b -= (end - start);
+}
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+_Given integers `$a$` and `$b$` and an array `$A$` with slice `$S$`, ensure that `$a - b$` is a valid index in the slice._
+
+```java
+while (a - b < start) {
+	a += (end - start);
+}
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+In this week's lab assignment, you'll be working with a Caesar shift cipher over the ASCII table.
+
+<img src="https://raw.githubusercontent.com/TSCS-2003/tscs-2003.github.io/refs/heads/main/week-01-arrays/Presentations/_Resources/ascii-table.png" alt="" style="width: 600px; object-fit: fill">
+
+
+Using a slice from `$32$` to `$127$` (i.e., `$[32, 127)$` ).
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+The ASCII table represents the **char** type.
+
+You'll be decoding one **char** into another using a Caesar shift, which has wraparound.
+
+e.g., 'w' with a shift of `$9$` is actually '!' .
+</div></script></section></div>
+    </div>
+
+    <script src="dist/reveal.js"></script>
+
+    <script src="plugin/markdown/markdown.js"></script>
+    <script src="plugin/highlight/highlight.js"></script>
+    <script src="plugin/zoom/zoom.js"></script>
+    <script src="plugin/notes/notes.js"></script>
+    <script src="plugin/math/math.js"></script>
+	<script src="plugin/mermaid/mermaid.js"></script>
+	<script src="plugin/chart/chart.min.js"></script>
+	<script src="plugin/chart/plugin.js"></script>
+	<script src="plugin/menu/menu.js"></script>
+	<script src="plugin/customcontrols/plugin.js"></script>
+	<script src="plugin/chalkboard/plugin.js"></script>
+
+    <script>
+      function extend() {
+        var target = {};
+        for (var i = 0; i < arguments.length; i++) {
+          var source = arguments[i];
+          for (var key in source) {
+            if (source.hasOwnProperty(key)) {
+              target[key] = source[key];
+            }
+          }
+        }
+        return target;
+      }
+
+	  function isLight(color) {
+		let hex = color.replace('#', '');
+
+		// convert #fff => #ffffff
+		if(hex.length == 3){
+			hex = `${hex[0]}${hex[0]}${hex[1]}${hex[1]}${hex[2]}${hex[2]}`;
+		}
+
+		const c_r = parseInt(hex.substr(0, 2), 16);
+		const c_g = parseInt(hex.substr(2, 2), 16);
+		const c_b = parseInt(hex.substr(4, 2), 16);
+		const brightness = ((c_r * 299) + (c_g * 587) + (c_b * 114)) / 1000;
+		return brightness > 155;
+	}
+
+	var bgColor = getComputedStyle(document.documentElement).getPropertyValue('--r-background-color').trim();
+	var isLight = isLight(bgColor);
+
+	if(isLight){
+		document.body.classList.add('has-light-background');
+	} else {
+		document.body.classList.add('has-dark-background');
+	}
+
+      // default options to init reveal.js
+      var defaultOptions = {
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+        transition: 'default', // none/fade/slide/convex/concave/zoom
+        plugins: [
+          RevealMarkdown,
+          RevealHighlight,
+          RevealZoom,
+          RevealNotes,
+          RevealMath.MathJax3,
+		  RevealMermaid,
+		  RevealChart,
+		  RevealCustomControls,
+		  RevealMenu,
+		  RevealChalkboard, 
+        ],
+
+
+    	allottedTime: 120 * 1000,
+
+		mathjax3: {
+			mathjax: 'plugin/math/mathjax/tex-mml-chtml.js',
+		},
+		markdown: {
+		  gfm: true,
+		  mangle: true,
+		  pedantic: false,
+		  smartLists: false,
+		  smartypants: false,
+		},
+
+		mermaid: {
+			theme: isLight ? 'default' : 'dark',
+		},
+
+		customcontrols: {
+			controls: [
+				{ icon: '<i class="fa fa-pen-square"></i>',
+				title: 'Toggle chalkboard (B)',
+				action: 'RevealChalkboard.toggleChalkboard();'
+				},
+				{ icon: '<i class="fa fa-pen"></i>',
+				title: 'Toggle notes canvas (C)',
+				action: 'RevealChalkboard.toggleNotesCanvas();'
+				},
+			]
+		},
+		menu: {
+			loadIcons: false
+		}
+      };
+
+      // options from URL query string
+      var queryOptions = Reveal().getQueryHash() || {};
+
+      var options = extend(defaultOptions, {"width":960,"height":700,"margin":0.04,"controls":true,"progress":true,"slideNumber":true,"transition":"slide","transitionSpeed":"default"}, queryOptions);
+    </script>
+
+    <script>
+      Reveal.initialize(options);
+    </script>
+  </body>
+
+  <!-- created with Advanced Slides -->
+</html>
