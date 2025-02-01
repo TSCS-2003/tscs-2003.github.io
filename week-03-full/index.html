@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <title></title>
+    <link rel="stylesheet" href="dist/reveal.css" />
+    <link rel="stylesheet" href="dist/theme/night.css" id="theme" />
+    <link rel="stylesheet" href="plugin/highlight/monokai.css" />
+	<link rel="stylesheet" href="css/layout.css" />
+	<link rel="stylesheet" href="plugin/customcontrols/style.css">
+	<link rel="stylesheet" href="plugin/chalkboard/style.css">
+
+
+
+    <script defer src="dist/fontawesome/all.min.js"></script>
+
+	<script type="text/javascript">
+		var forgetPop = true;
+		function onPopState(event) {
+			if(forgetPop){
+				forgetPop = false;
+			} else {
+				parent.postMessage(event.target.location.href, "app://obsidian.md");
+			}
+        }
+		window.onpopstate = onPopState;
+		window.onmessage = event => {
+			if(event.data == "reload"){
+				window.document.location.reload();
+			}
+			forgetPop = true;
+		}
+
+		function fitElements(){
+			const itemsToFit = document.getElementsByClassName('fitText');
+			for (const item in itemsToFit) {
+				if (Object.hasOwnProperty.call(itemsToFit, item)) {
+					var element = itemsToFit[item];
+					fitElement(element,1, 1000);
+					element.classList.remove('fitText');
+				}
+			}
+		}
+
+		function fitElement(element, start, end){
+
+			let size = (end + start) / 2;
+			element.style.fontSize = `${size}px`;
+
+			if(Math.abs(start - end) < 1){
+				while(element.scrollHeight > element.offsetHeight){
+					size--;
+					element.style.fontSize = `${size}px`;
+				}
+				return;
+			}
+
+			if(element.scrollHeight > element.offsetHeight){
+				fitElement(element, start, size);
+			} else {
+				fitElement(element, size, end);
+			}		
+		}
+
+
+		document.onreadystatechange = () => {
+			fitElements();
+			if (document.readyState === 'complete') {
+				if (window.location.href.indexOf("?export") != -1){
+					parent.postMessage(event.target.location.href, "app://obsidian.md");
+				}
+				if (window.location.href.indexOf("print-pdf") != -1){
+					let stateCheck = setInterval(() => {
+						clearInterval(stateCheck);
+						window.print();
+					}, 250);
+				}
+			}
+	};
+
+
+        </script>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides"><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Improving Algorithmic Efficiency
+_The images in this presentation do not belong to me nor or they my intellectual work. They are the work of wonderful artists and designers that have made their work available online. I am making use of them as part of Free and Fair Use for Educational purposes._
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Let's start with a new problem...
+
+_Imagine that you want to determine if an element `$X$` is contained in some sequence._
+
+How would you solve this?
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+This particular problem requires a **search** (or **find**) algorithm, which is an algorithm whose purpose is to locate something in a collection.
+
+<img src="https://raw.githubusercontent.com/TSCS-2003/tscs-2003.github.io/refs/heads/main/week-03-full/Presentations/_Resources/poco-bear-searching.jpg" alt="" style="width: 750px; object-fit: fill">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+If you don't know any general **search** algorithms, you can always start with something similar that you do know.
+
+What have we already learned before that's similar?
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+What about, _compute the maximum element of a sequence?_
+
+This is a problem that also requires a **search** algorithm. The possible outputs are different, but the underlying process is the same.
+
+**The algorithm must _search_ through the elements in the sequence to find what it's looking for!**
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+FIND_MAX
+
+1. Given a sequence of elements, assume that the first element is the **max**.
+2. For each other element `$x$`, compare `$x$` to the **max**. If the **max** is smaller, set the **max** to `$x$`.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Does this solve the problem?
+
+1. Let's assume that the algorithm has finished.
+2. The algorithm indicates that `$x$` is the **max** but actually some other element `$y$` is larger than `$x$`.
+3. If `$y$` is in the sequence and the algorithm has finished, then the **max** would be `$y$`.
+4. So either the algorithm has not finished, `$y$` is not in the sequence, or `$y$` is not larger than `$x$`.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+This is the **findMax** algorithm in Java.
+```java
+public int findMax(int[] arr) {
+	int max = arr[0];
+	for (int i = 1; i < arr.length; i++) {
+		if (max < arr[i]) max = arr[i];
+	}
+	return max;
+}
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Could we use this algorithm as a template to implement a more general **search** algorithm?
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+HINT
+
+_What if rather than storing a max, we store an index instead?_
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+This is the **indexOf** algorithm in Java.
+```java
+public int indexOf(int[] arr, int x) {
+	int idx = -1;
+	for (int i = 0; i < arr.length; i++) {
+		if (x == arr[i]) idx = i;
+	}
+	return idx;
+}
+```
+
+Why is the default value `$-1$`?
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+The **indexOf** algorithm can be further simplified.
+```java
+public int indexOf(int[] arr, int x) {
+	for (int i = 0; i < arr.length; i++) {
+		if (x == arr[i]) return i;
+	}
+	return -1;
+}
+```
+</div>
+
+<aside class="notes"><p>do we know that this algorithm works?</p>
+</aside></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+How could the **indexOf** algorithm be used as a general **search** algorithm? What's the key idea?
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+HINT
+
+What value(s) of `indexOf(x)` indicate that an element is present in a collection? Do we then know where the element is in the collection?
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+There is also just the **contains** algorithm if you don't need the index.
+```java
+public boolean contains(int[] arr, int x) {
+	for (int i = 0; i < arr.length; i++) {
+		if (x == arr[i]) return true;
+	}
+	return false;
+}
+```
+</div>
+
+<aside class="notes"><p>do we know that this algorithm works?</p>
+</aside></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+It could be said that these are all relatively simple ideas, so why are we spending time on them?
+
+For one, they are useful, so we should make sure that we know them.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+More importantly though, while we may understand these ideas, _do we know the complexity of these algorithms?_
+
+<img src="https://raw.githubusercontent.com/TSCS-2003/tscs-2003.github.io/refs/heads/main/week-03-full/Presentations/_Resources/thinking-pose.jpg" alt="" style="width: 750px; object-fit: fill">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+For any algorithm, you must be able to answer three questions!
+1. What does it do?
+2. Does it produce a correct solution?
+3. What is its performance and memory complexity?
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+These three algorithms
+- **findMax**,
+- **indexOf**,
+- **contains**, and
+
+All use the same essential structure.
+```
+for all elements,
+	do some comparison;
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+The `for all elements` is `$O(n)$`, where `$n$` is the number of elements.
+
+The `do some comparison` is `$O(1)$`, since arithmetic operations are **constant**.
+
+Since these statements are nested, we have `$O(n) \cdot O(1) = O(n)$`.
+</div>
+
+<aside class="notes"><p>nested means that they are multiplied together</p>
+</aside></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+These **search** algorithms are all **linear** algorithms.
+
+<img src="https://raw.githubusercontent.com/TSCS-2003/tscs-2003.github.io/refs/heads/main/week-03-full/Presentations/_Resources/linear-curve.png" alt="" style="width: 650px; object-fit: fill">
+
+
+We should not move past this point unless we can see _why_ these algorithms are linear.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Scale it Up
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Let's scale the problem,
+
+_Imagine that you have two sequences `$S$` of length `$n$` and `$T$` of length `$m$`. You need to determine which elements of `$S$` are in `$T$`._
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+If we are to use one of our **search** algorithms, then we could attempt to find every element of `$S$` in `$T$`.
+
+The **search** would be on `$T$` with length `$m$`, so it would have `$O(m)$` complexity.
+
+There are `$n$` elements in `$S$`, so we have to repeat the **search** algorithm `$O(n)$` times.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+So we now have a `$O(n \cdot m)$` algorithm, which is the same as `$O(n^2)$` or `$O(m^2)$`.
+
+<img src="https://raw.githubusercontent.com/TSCS-2003/tscs-2003.github.io/refs/heads/main/week-03-full/Presentations/_Resources/algorithmic-complexity.jpg" alt="" style="width: 750px; object-fit: fill">
+</div>
+
+<aside class="notes"><p>they are the same because the range of values for n and m is the same</p>
+</aside></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+A quadratic algorithm is not great. So, **can we improve our algorithm**?
+
+For example,
+- Can we reduce the number of **search** calls?
+- Can we improve the **search** algorithm?
+- Are we just stuck with `$O(n \cdot m)$`?
+</div>
+
+<aside class="notes"><p>the first is generally not possible and the third is only true if the second is not possible, so we must look at the second option</p>
+</aside></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Benefits of Sorting
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Let's pivot for a moment,
+
+_Imagine that we wanted to repeat the **findMax** algorithm `$n$` times..._
+
+That would also be an `$O(n \cdot m)$` algorithm. Could we possibly reduce its complexity though?
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+The main problem that the **findMax** algorithm solves is locating a maximum element when its location is _unknown._
+
+But what if we could ensure that the maximum element is at a _known_ location?
+
+Then it would only take `$O(1)$` to access the element because reading an element is an arithmetic operation.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+_If a sequence is sorted, do we definitively know where the maximum element is?_
+
+**Yes**. It's always at the end of the sequence.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+While it may take some time to sort a sequence of elements, once the sequence is sorted, it doesn't need to be sorted again.
+
+The **findMax** algorithm becomes `$O(1)$`.
+
+We can then repeat **findMax** exactly `$n$` times and doing so becomes an `$O(n)$` algorithm instead of `$O(n \cdot m)$`.
+</div>
+
+<aside class="notes"><p>because findMax becomes a constant time algorithm.</p>
+</aside></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Can we apply a similar idea to the general **search** algorithm?
+
+<img src="https://raw.githubusercontent.com/TSCS-2003/tscs-2003.github.io/refs/heads/main/week-03-full/Presentations/_Resources/thinking-bear.jpg" alt="" style="width: 750px; object-fit: fill">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+_Imagine that you have some sequence S that is sorted in ascending order. You select a random element and this is what you see._
+
+`$... x ... 9 ... y ...$`
+
+You want to find the element `$5$`. Where could it be? Could `$x$` be `$5$`? Could `$y$` be `$5$`?
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+If the sequence is sorted in ascending order, then it must also be the case that `$x \leq 9 \leq y$`. 
+
+Since `$5 \leq 9$`, it is not possible that `$y$` could be `$5$`.
+
+But also, **no element to the right of `$9$` can be `$5$`**. So why even search to the right of `$9$`?
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+The element `$9$` was selected randomly, so it could be anywhere in the sequence.
+
+Ignoring everything to the right of `$9$` may ignore most of the "field" or very little of it.
+
+<img src="https://raw.githubusercontent.com/TSCS-2003/tscs-2003.github.io/refs/heads/main/week-03-full/Presentations/_Resources/utulsa-football-field.jpg" alt="" style="width: 600px; object-fit: fill">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+But what if we could guarantee that we always ignore exactly half of the "field" anytime we have to continue searching?
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Binary Search
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+_The binary search algorithm is a search algorithm where you use the middle element of a sorted sequence to identify which half of the sequence contains the target element._
+
+Key idea: An element in a sorted sequence must either (i) be the middle element, (ii) to the left of the middle element, or (iii) to the right of the middle element.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+BIN_SEARCH
+
+1. Given a sorted sequence `$S$` of length `$n$` and some element `$x$`.
+2. If `$S$` has only one element, then `$x$` is in `$S$` if that element is `$x$`.
+3. Let `$mid$` be the middle element of `$S$`.
+	- If `$x == mid$`, then `$x$` is in `$S$`.
+	- If `$x < mid$`, repeat from (1) with `$S[0..\frac{n}{2}]$`.
+	- Else, repeat from (1) with `$S[(\frac{n}{2}+1)..n]$`.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Does this algorithm work?
+
+1. Assume that there is a sorted sequence `$S$`, an element `$x$`, and that the algorithm has finished.
+2. If `$x$` was found but not in the sequence, then the `$mid$` was selected from outside the sequence. That's not possible.
+3. If `$x$` wasn't found but in the sequence, then there must have been some `$mid$` for which (i) `$x < mid$` but `$x$` appears after or (ii) `$x > mid$` but `$x$` appears before. Which means that the sequence wasn't sorted.
+4. So either the sequence wasn't sorted or the algorithm hasn't finished.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Let's see an example,
+
+<img src="https://raw.githubusercontent.com/TSCS-2003/tscs-2003.github.io/refs/heads/main/week-03-full/Presentations/_Resources/Binary-Search.png" alt="" style="width: 750px; object-fit: fill">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+What about its complexity?
+
+The memory complexity is easy. The binary search algorithm only uses a variables for the start, middle, and end of the sequence.
+
+So memory complexity is `$O(1)$`, since those variables are all integers.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Logarithmic Performance
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+The performance of binary search has a **logarithmic complexity**.
+
+Let's break down why that's the case using the **worst-case**. What is the worst-case for binary search?
+
+Would it be some element that is in the sequence or based on where that element is positioned in the sequence?
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+The worst-case is when the target element **is not in the sequence**. Binary search has to use the maximum possible tries to determine that the element is not contained in the sequence.
+
+How many tries would binary search need for a sequence of length `$n$`? i.e., how many middle elements would be considered?
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Let's go through it.
+
+- At first, there are `$n$` elements. We compute a middle element and then get to ignore half of the elements.
+- Then there are `$\frac{n}{2}$` elements. We compute a middle element and ignore another half of the **remaining** elements.
+- Then there are `$\frac{n}{4}$` elements. We compute a middle element and ignore another half of the **remaining** elements.
+- Do we see the pattern?
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+After `$k$` tries, the binary search algorithm has _effectively_ cut the sequence in half `$k$` times.
+
+<img src="https://raw.githubusercontent.com/TSCS-2003/tscs-2003.github.io/refs/heads/main/week-03-full/Presentations/_Resources/bin-search-recursion.png" alt="" style="object-fit: scale-down">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+The number of cuts `$k$` can be computed. The binary search algorithm will keep cutting until there is only one more element.
+
+`$\frac{n}{2^k} = 1$`\
+`$\rightarrow n = 2^k$`\
+`$\rightarrow log(n) = log(2^k)$`\
+`$\rightarrow log(n) = k \cdot log(2)$`\
+`$\rightarrow log(n) = k$`
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+So the worst-case performance of binary search is `$k$` cuts to get to one element and then one last check.
+
+Its performance complexity is \
+`$O(log(n) + 1) = O(lgn)$`.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Binary search
+
+performance: `$O(1)$` (best), `$O(lgn)$` (worst)
+
+memory: `$O(1)$` (always)
+</div></script></section></div>
+    </div>
+
+    <script src="dist/reveal.js"></script>
+
+    <script src="plugin/markdown/markdown.js"></script>
+    <script src="plugin/highlight/highlight.js"></script>
+    <script src="plugin/zoom/zoom.js"></script>
+    <script src="plugin/notes/notes.js"></script>
+    <script src="plugin/math/math.js"></script>
+	<script src="plugin/mermaid/mermaid.js"></script>
+	<script src="plugin/chart/chart.min.js"></script>
+	<script src="plugin/chart/plugin.js"></script>
+	<script src="plugin/menu/menu.js"></script>
+	<script src="plugin/customcontrols/plugin.js"></script>
+	<script src="plugin/chalkboard/plugin.js"></script>
+
+    <script>
+      function extend() {
+        var target = {};
+        for (var i = 0; i < arguments.length; i++) {
+          var source = arguments[i];
+          for (var key in source) {
+            if (source.hasOwnProperty(key)) {
+              target[key] = source[key];
+            }
+          }
+        }
+        return target;
+      }
+
+	  function isLight(color) {
+		let hex = color.replace('#', '');
+
+		// convert #fff => #ffffff
+		if(hex.length == 3){
+			hex = `${hex[0]}${hex[0]}${hex[1]}${hex[1]}${hex[2]}${hex[2]}`;
+		}
+
+		const c_r = parseInt(hex.substr(0, 2), 16);
+		const c_g = parseInt(hex.substr(2, 2), 16);
+		const c_b = parseInt(hex.substr(4, 2), 16);
+		const brightness = ((c_r * 299) + (c_g * 587) + (c_b * 114)) / 1000;
+		return brightness > 155;
+	}
+
+	var bgColor = getComputedStyle(document.documentElement).getPropertyValue('--r-background-color').trim();
+	var isLight = isLight(bgColor);
+
+	if(isLight){
+		document.body.classList.add('has-light-background');
+	} else {
+		document.body.classList.add('has-dark-background');
+	}
+
+      // default options to init reveal.js
+      var defaultOptions = {
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+        transition: 'default', // none/fade/slide/convex/concave/zoom
+        plugins: [
+          RevealMarkdown,
+          RevealHighlight,
+          RevealZoom,
+          RevealNotes,
+          RevealMath.MathJax3,
+		  RevealMermaid,
+		  RevealChart,
+		  RevealCustomControls,
+		  RevealMenu,
+		  RevealChalkboard, 
+        ],
+
+
+    	allottedTime: 120 * 1000,
+
+		mathjax3: {
+			mathjax: 'plugin/math/mathjax/tex-mml-chtml.js',
+		},
+		markdown: {
+		  gfm: true,
+		  mangle: true,
+		  pedantic: false,
+		  smartLists: false,
+		  smartypants: false,
+		},
+
+		mermaid: {
+			theme: isLight ? 'default' : 'dark',
+		},
+
+		customcontrols: {
+			controls: [
+				{ icon: '<i class="fa fa-pen-square"></i>',
+				title: 'Toggle chalkboard (B)',
+				action: 'RevealChalkboard.toggleChalkboard();'
+				},
+				{ icon: '<i class="fa fa-pen"></i>',
+				title: 'Toggle notes canvas (C)',
+				action: 'RevealChalkboard.toggleNotesCanvas();'
+				},
+			]
+		},
+		menu: {
+			loadIcons: false
+		}
+      };
+
+      // options from URL query string
+      var queryOptions = Reveal().getQueryHash() || {};
+
+      var options = extend(defaultOptions, {"width":960,"height":700,"margin":0.04,"controls":true,"progress":true,"slideNumber":true,"transition":"slide","transitionSpeed":"default"}, queryOptions);
+    </script>
+
+    <script>
+      Reveal.initialize(options);
+    </script>
+  </body>
+
+  <!-- created with Advanced Slides -->
+</html>
