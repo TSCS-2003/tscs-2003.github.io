@@ -9,4 +9,8 @@
 
 
 ### Week 2
-[Week 2 - Algorithmic Efficiency](https://tscs-2003.github.io/week-02/index.html)
+[Week 2 - Algorithmic Efficiency - Full Presentation](https://tscs-2003.github.io/week-02-full/index.html)
+
+[Week 2 - Algorithmic Efficiency - Intro](https://tscs-2003.github.io/week-02-efficiency/index.html)
+
+[Week 2 - Algorithmic Efficiency - Bubble Sort](https://tscs-2003.github.io/week-02-bubble-sort/index.html)
